@@ -69,7 +69,7 @@ class Clip(QtWidgets.QPushButton):
     EMPTY = 0
     VIDEO = 1
 
-    SEEKSTEP = 500
+    SEEKSTEP = 1000
 
     def __init__(self, parent=None, url='', sPos=0, name=None):
         super().__init__(parent)
@@ -165,6 +165,17 @@ class PlayerWidget(QtWidgets.QWidget):
                 pos = self.track.player.position()
                 self.track.player.setPosition( pos - Clip.SEEKSTEP )
                 self.track.curClip.adjustPos(Clip.SEEKSTEP * -1)
+
+    def mouseReleaseEvent(self, e):
+        modifier = e.modifiers()
+        if  modifier == QtCore.Qt.ControlModifier:
+            self.track.setMarker()
+        elif modifier == QtCore.Qt.ShiftModifier:
+            self.track.syncClipToMarker()
+        elif modifier == QtCore.Qt.AltModifier:
+            self.track.setMarker(False)
+        else:
+            pass
     
 
 class Track(QtWidgets.QLabel):
@@ -334,6 +345,8 @@ class Track(QtWidgets.QLabel):
                 self.schNC(nP)
             elif not self.curClip:
                 self.playerW.hide()
+        else: # No clip in this track.
+            self.playerW.hide()
 
     def playerStateChange(self):
         if self.player.state() == QtMultimedia.QMediaPlayer.StoppedState: # and self.nextClip == None:
@@ -363,6 +376,28 @@ class Track(QtWidgets.QLabel):
         # Clear the timer.
         self.timer.stop()
 
+    
+    def setMarker(self, newMarker = True):
+        trks = self.parent()
+        if newMarker:
+            print(trks.getCurPos())
+            trks.marker = trks.getCurPos()
+        else:
+            trks.marker = 0
+    
+    def syncClipToMarker(self):
+        trks = self.parent()
+
+        clpPos = self.player.position()
+        oldPos = self.curClip.sPos + clpPos
+        shiftMS = trks.marker - oldPos
+        self.curClip.adjustPos(shiftMS)
+        print(f'Align {oldPos} of {self.curClip.name} with marker at {trks.marker}')
+        trks.pausePlay()
+        trks.resumeFrom -= 1000
+        trks.resumePlay()
+
+        
     def dragEnterEvent(self, event):
         self.mainWindow.statusBar().showMessage(f"Drop file(s) to add to Track {self.no} for playing.")
         event.accept()
@@ -395,6 +430,10 @@ class Tracks(QtWidgets.QWidget):
         self.totalDuration = 0
 
         self.isPlaying = False
+
+        # Marker position in ms used to sync tracks.
+        self.marker = 0
+
         self.pbSpeedF = 1
 
         #nano seconds for play position, relay on the system clock.

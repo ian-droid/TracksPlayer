@@ -32,6 +32,14 @@ class Player(QtWidgets.QMainWindow):
         self.ppBtn = QtWidgets.QPushButton("⏵", self)
         self.ppBtn.setCheckable(False)
         self.ppBtn.setFixedSize(50, 30)
+       
+        # The "Clock" for progress with style.
+        self.progressClock = QtWidgets.QLabel(self)
+        # self.progressClock.setMaximumHeight(30)
+
+        markerLabel = QtWidgets.QLabel("↘️︎:", self)
+        self.markerPos = QtWidgets.QLabel(self)
+        self.markerPos.setToolTip("In player window, use Ctrl + mouse click to set marker, Shift + mouse click to sync to marker, and Alt + mouse click to clear the marker.s")
  
         self.addTrackBtn = QtWidgets.QPushButton("+", self)
         self.addTrackBtn.setCheckable(False)
@@ -50,10 +58,6 @@ class Player(QtWidgets.QMainWindow):
         self.speedDial.setMaximum(2)
         self.speedDial.setValue(self.tracks.pbSpeedF)
         self.speedDial.setDisabled(True)
-       
-        # The "Clock" for progress with style.
-        self.progressClock = QtWidgets.QLabel(self)
-        # self.progressClock.setMaximumHeight(30)
 
         self.sttBar= QtWidgets.QStatusBar(self)
         # self.sttBar.addPermanentWidget(self.progressClock)
@@ -65,6 +69,9 @@ class Player(QtWidgets.QMainWindow):
         controlsBox = QtWidgets.QHBoxLayout()
         controlsBox.addWidget(self.ppBtn)
         controlsBox.addWidget(self.progressClock)
+        controlsBox.addSpacing(20)
+        controlsBox.addWidget(markerLabel)
+        controlsBox.addWidget(self.markerPos)
         controlsBox.addStretch()
         controlsBox.addWidget(self.addTrackBtn)
         controlsBox.addWidget(self.saveTracksBtn)
@@ -119,6 +126,8 @@ class Player(QtWidgets.QMainWindow):
             self.ppBtn.setText("⏸︎")
         else:
             self.ppBtn.setText("⏵")
+        
+        self.markerPos.setText(str(datetime.timedelta(seconds=self.tracks.marker/1000)))
             
     def saveTracksToYaml(self):
         fname = QtWidgets.QFileDialog.getSaveFileName(self, caption='Save Track(s)', filter="Tracks Files (*.tracks)")
