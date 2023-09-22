@@ -16,8 +16,8 @@ class AdjustClipPosDialog(QtWidgets.QDialog):
         self.layout.addWidget(QtWidgets.QLabel(f'{clip.name} current starats at {clip.durMsStr(clip.sPos)}({clip.sPos/1000})'))
 
         self.direction = QtWidgets.QComboBox(self)
-        self.direction.addItem('+')
-        self.direction.addItem('-')
+        self.direction.addItem('Delay')
+        self.direction.addItem('Advance')
 
         # seconds = floor(clip.sPos / 1000)
         # minutes = floor(seconds/60)
@@ -54,7 +54,7 @@ class AdjustClipPosDialog(QtWidgets.QDialog):
 
     def getMS(self) -> int:
         direction = 1
-        if self.direction.currentText() == '-': direction = -1
+        if self.direction.currentText() == 'Advance': direction = -1
         return ((self.mins.value() * 60 + self.secs.value())*1000 + self.ms.value()) * direction
     
     @staticmethod

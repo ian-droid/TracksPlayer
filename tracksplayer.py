@@ -44,20 +44,25 @@ class Player(QtWidgets.QMainWindow):
         self.addTrackBtn = QtWidgets.QPushButton("+", self)
         self.addTrackBtn.setCheckable(False)
         self.addTrackBtn.setFixedSize(50, 30)
+        self.addTrackBtn.setToolTip("Add a new blank track.")
+
 
         self.saveTracksBtn = QtWidgets.QPushButton("💾︎", self)
         self.saveTracksBtn.setCheckable(False)
         self.saveTracksBtn.setFixedSize(50, 30)
+        self.saveTracksBtn.setToolTip("Save the track(s) to a file.")
 
         self.newTracksBtn = QtWidgets.QPushButton("🗋", self)
         self.newTracksBtn.setCheckable(False)
         self.newTracksBtn.setFixedSize(50, 30)
+        self.newTracksBtn.setToolTip("Clear all tracks.")
 
         self.speedDial = QtWidgets.QDial(self)
         self.speedDial.setMinimum(0)
         self.speedDial.setMaximum(2)
         self.speedDial.setValue(self.tracks.pbSpeedF)
         self.speedDial.setDisabled(True)
+        self.speedDial.setToolTip("Playback speed dial (unimplemented.).")
 
         self.sttBar= QtWidgets.QStatusBar(self)
         # self.sttBar.addPermanentWidget(self.progressClock)
