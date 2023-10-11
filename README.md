@@ -19,7 +19,7 @@ Written in Python with PyQt5, it's just working: barely no exception handling. A
  
 
 ## To Do
-- Frameless player window.
 - Improve the UI, especially for Windows, as it's not displayed as proper as in Debian with scaled 4K desktop.
-- Better window management: main window start position, and (auto) arrangement of opened player window(s).
+- Frameless player window.
+- Better window management: main window start position, and (auto) arrangement of opened player window(s); Or maybe just leave that to window manager like Awesome.
 - Draggable clips.

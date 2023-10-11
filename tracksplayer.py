@@ -37,9 +37,11 @@ class Player(QtWidgets.QMainWindow):
         self.progressClock = QtWidgets.QLabel(self)
         # self.progressClock.setMaximumHeight(30)
 
+        self.loopCheck = QtWidgets.QCheckBox("Loop", self)
+
         markerLabel = QtWidgets.QLabel("↘️︎:", self)
         self.markerPos = QtWidgets.QLabel(self)
-        self.markerPos.setToolTip("In player window, use Ctrl + mouse click to set marker, Shift + mouse click to sync to marker, and Alt + mouse click to clear the marker.s")
+        self.markerPos.setToolTip("In player window, use Ctrl + mouse click to set marker, Shift + mouse click to sync to marker, and Alt + mouse click to clear the marker.")
  
         self.addTrackBtn = QtWidgets.QPushButton("+", self)
         self.addTrackBtn.setCheckable(False)
@@ -74,6 +76,7 @@ class Player(QtWidgets.QMainWindow):
         controlsBox = QtWidgets.QHBoxLayout()
         controlsBox.addWidget(self.ppBtn)
         controlsBox.addWidget(self.progressClock)
+        controlsBox.addWidget(self.loopCheck)
         controlsBox.addSpacing(20)
         controlsBox.addWidget(markerLabel)
         controlsBox.addWidget(self.markerPos)
@@ -123,11 +126,16 @@ class Player(QtWidgets.QMainWindow):
     def updateStatus(self):
         if self.tracks.isPlaying:
             pos = self.tracks.getCurPos()
+            if pos >= self.tracks.totalDuration:
+                self.tracks.isPlaying = False
+                if self.loopCheck.isChecked():
+                    self.tracks.resumeFrom = 0
+                    self.tracks.resumePlay()
+                else:
+                    self.stopAll()
             posS = int(pos/1000)
             self.tracks.positionSlider.setValue(posS)
             self.progressClock.setText(str(datetime.timedelta(seconds=posS)) + "/" + str(datetime.timedelta(seconds=int(self.tracks.totalDuration/1000))))
-            if pos >= self.tracks.totalDuration:
-                self.stopAll()
             self.ppBtn.setText("⏸︎")
         else:
             self.ppBtn.setText("⏵")
