@@ -4,65 +4,7 @@ from pymediainfo import MediaInfo
 from urllib.parse import unquote
 from math import floor
 
-class AdjustClipPosDialog(QtWidgets.QDialog):
-    def __init__(self, clip):
-        super().__init__()
-
-        self.setWindowTitle(f"Adjust Time of {clip.name}")
-
-        QBtn = QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel
-
-        self.layout = QtWidgets.QVBoxLayout()
-        self.layout.addWidget(QtWidgets.QLabel(f'{clip.name} current starats at {clip.durMsStr(clip.sPos)}({clip.sPos/1000})'))
-
-        self.direction = QtWidgets.QComboBox(self)
-        self.direction.addItem('Delay')
-        self.direction.addItem('Advance')
-
-        # seconds = floor(clip.sPos / 1000)
-        # minutes = floor(seconds/60)
-
-        self.mins = QtWidgets.QSpinBox(self)
-        # self.mins.setValue(floor(minutes))
-
-        self.secs = QtWidgets.QSpinBox(self)
-        self.secs.setMinimum(0)
-        self.secs.setMaximum(59)
-        # self.secs.setValue(seconds - minutes * 60)
-
-        self.ms = QtWidgets.QSpinBox(self)
-        self.ms.setMinimum(0)
-        self.ms.setMaximum(999)
-        # self.ms.setValue(clip.sPos % 1000)
-
-        inputs = QtWidgets.QHBoxLayout()
-        inputs.addStretch()
-        inputs.addWidget(self.direction)
-        inputs.addWidget(self.mins)
-        inputs.addWidget(QtWidgets.QLabel("m:"))
-        inputs.addWidget(self.secs)
-        inputs.addWidget(QtWidgets.QLabel("s."))
-        inputs.addWidget(self.ms)
-
-        self.buttonBox = QtWidgets.QDialogButtonBox(QBtn)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
-
-        self.layout.addLayout(inputs)
-        self.layout.addWidget(self.buttonBox)
-        self.setLayout(self.layout)
-
-    def getMS(self) -> int:
-        direction = 1
-        if self.direction.currentText() == 'Advance': direction = -1
-        return ((self.mins.value() * 60 + self.secs.value())*1000 + self.ms.value()) * direction
-    
-    @staticmethod
-    def getMsShift(clip):
-        dialog = AdjustClipPosDialog(clip)
-        result = dialog.exec()
-        return dialog.getMS(), result
-
+from alignments import AdjustClipPosDialog
 
 class Clip(QtWidgets.QPushButton):
     
@@ -130,6 +72,7 @@ class Clip(QtWidgets.QPushButton):
             idx += 1
         # Update the track length.
         self.parent().ePos = siblings[idx-1].ePos
+        print ("done.")
         
 
 class PlayerWidget(QtWidgets.QWidget):
